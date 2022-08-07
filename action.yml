@@ -1,0 +1,38 @@
+name: Delete Files
+description: Deletes Files
+branding:
+  icon: x
+  color: gray-dark
+inputs:
+  directory:
+    description: Parent directory (optional)
+    required: false
+  files:
+    description: Files to delete
+    required: false
+  if-empty:
+    description: Directories to delete if they are empty
+    required: false
+runs:
+  using: composite
+  steps:        
+
+    - shell: bash
+      env:
+        DIRECTORY: ${{ inputs.directory }}
+        FILES: ${{ inputs.files }}
+        IF_EMPTY: ${{ inputs.if-empty }}
+      run: |
+        if [[ ! -z "$FILES" ]]; then
+          if [[ ! -z "$DIRECTORY" ]]; then
+            FILES=$(echo "$FILES" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
+          fi
+          rm -rf "$FILES"
+        fi
+
+        if [[ ! -z "$IF_EMPTY" ]]; then
+          if [[ ! -z "$DIRECTORY" ]]; then
+            IF_EMPTY=$(echo "$IF_EMPTY" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
+          fi
+          rmdir --ignore-fail-on-non-empty "$IF_EMPTY"
+        fi

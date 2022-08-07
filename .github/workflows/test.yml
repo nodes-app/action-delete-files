@@ -1,0 +1,37 @@
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create Test Files
+        run: |
+          mkdir test
+          mkdir test/foo
+          mkdir test/empty
+          mkdir test/not_empty
+          echo > test/test.txt
+          echo > test/foo/test.txt
+          echo > test/not_empty/test.txt
+
+      - name: Test Action
+        uses: ./
+        with:
+          directory: test
+          files: |
+            foo
+            test.txt
+          if-empty: |
+            empty
+            not_empty
+
+      - name: Check Result
+        run: |
+          if [[ "$(echo test/*)" != 'test/empty' ]]; then
+            echo 'unexpected result'
+            exit 1
+          fi
