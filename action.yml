@@ -23,6 +23,9 @@ runs:
         DELETE: ${{ inputs.delete }}
         DELETE_IF_EMPTY: ${{ inputs.delete-if-empty }}
       run: |
+        DELETE=$(echo "$DELETE" | awk 'NF')
+        DELETE_IF_EMPTY=$(echo "$DELETE_IF_EMPTY" | awk 'NF')
+
         if [[ ! -z "$DELETE" ]]; then
           if [[ ! -z "$DIRECTORY" ]]; then
             DELETE=$(echo "$DELETE" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
