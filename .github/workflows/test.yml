@@ -22,10 +22,10 @@ jobs:
         uses: ./
         with:
           directory: test
-          files: |
+          delete: |
             foo
             test.txt
-          if-empty: |
+          delete-if-empty: |
             empty
             not_empty
 

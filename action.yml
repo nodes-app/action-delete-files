@@ -7,10 +7,10 @@ inputs:
   directory:
     description: Parent directory (optional)
     required: false
-  files:
+  delete:
     description: Files to delete
     required: false
-  if-empty:
+  delete-if-empty:
     description: Directories to delete if they are empty
     required: false
 runs:
@@ -20,19 +20,19 @@ runs:
     - shell: bash
       env:
         DIRECTORY: ${{ inputs.directory }}
-        FILES: ${{ inputs.files }}
-        IF_EMPTY: ${{ inputs.if-empty }}
+        DELETE: ${{ inputs.delete }}
+        DELETE_IF_EMPTY: ${{ inputs.delete-if-empty }}
       run: |
-        if [[ ! -z "$FILES" ]]; then
+        if [[ ! -z "$DELETE" ]]; then
           if [[ ! -z "$DIRECTORY" ]]; then
-            FILES=$(echo "$FILES" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
+            DELETE=$(echo "$DELETE" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
           fi
-          rm -rf "$FILES"
+          eval "rm -rf $(echo "$DELETE" | awk '{printf "%s ", "'\''" $0 "'\''"} END {print ""}')"
         fi
 
-        if [[ ! -z "$IF_EMPTY" ]]; then
+        if [[ ! -z "$DELETE_IF_EMPTY" ]]; then
           if [[ ! -z "$DIRECTORY" ]]; then
-            IF_EMPTY=$(echo "$IF_EMPTY" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
+            DELETE_IF_EMPTY=$(echo "$DELETE_IF_EMPTY" | awk -v prefix="$DIRECTORY/" '{print prefix $0}')
           fi
-          rmdir --ignore-fail-on-non-empty "$IF_EMPTY"
+          eval "rmdir --ignore-fail-on-non-empty $(echo "$DELETE_IF_EMPTY" | awk '{printf "%s ", "'\''" $0 "'\''"} END {print ""}')"
         fi
