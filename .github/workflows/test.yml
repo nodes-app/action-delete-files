@@ -32,6 +32,6 @@ jobs:
       - name: Check Result
         run: |
           if [[ "$(echo test/*)" != 'test/not_empty' ]]; then
-            echo "unexpected result
+            echo 'unexpected result'
             exit 1
           fi
